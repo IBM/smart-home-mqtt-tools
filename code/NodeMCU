@@ -1,0 +1,139 @@
+
+
+
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+int WET= 16; // Wet Indicator at Digital PIN D0
+int DRY= 2;  // Dry Indicator at Digital PIN D4
+int sense_Pin= 0; // Soil Sensor input at Analog PIN A0
+int value= 0;
+
+
+// Change the credentials below, so your ESP8266 connects to your router
+const char* ssid = "XXX";
+const char* password = "XXX";
+
+// Change the variable to your Gateway (Raspberry Pi) IP address, so it connects to your MQTT broker
+const char* mqtt_server = "XXX";
+
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+
+
+void setup_moisture() {
+   Serial.begin(9600);
+   pinMode(WET, OUTPUT);
+   pinMode(DRY, OUTPUT);
+   delay(2000);
+}
+
+void setup_wifi() {
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("WiFi connected - ESP IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+// This functions is executed when some device publishes a message to a topic that your ESP8266 is subscribed to
+// Change the function below to add logic to your program, so when a device publishes a message to a topic that 
+// your ESP8266 is subscribed you can actually do something
+
+void callback(String topic, byte* message, unsigned int length) {
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageTemp;
+  
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+ }
+
+
+// This functions reconnects your ESP8266 to your MQTT broker
+// Change the function below if you want to subscribe to more topics with your ESP8266 
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (client.connect("ESP8266Client")) {
+      Serial.println("connected");  
+      // Subscribe or resubscribe to a topic
+      // You can subscribe to more topics (to control more LEDs in this example)
+      client.subscribe("room/lamp");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
+// The setup function sets your ESP GPIOs to Outputs, starts the serial communication at a baud rate of 115200
+// Sets your mqtt broker and sets the callback function
+// The callback function is what receives messages and actually controls the LEDs
+void setup() {
+ Serial.begin(115200);
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
+}
+
+// For this project, you don't need to change anything in the loop function. Basically it ensures that you ESP is connected to your broker
+void loop() {
+//buttonState = digitalRead(buttonPin);
+     delay(50000);
+     Serial.print("MOISTURE LEVEL : ");
+   value= analogRead(sense_Pin);
+   value= value/10;
+   Serial.println(value);
+   
+     if(value<60)
+   {
+      digitalWrite(WET, HIGH);
+      Serial.println(WET);
+      delay(50000);
+      client.publish("smart/garden/message/soil", "Wet");
+   }
+     else
+   {
+      digitalWrite(DRY,HIGH);
+      Serial.println(DRY);
+      delay(50000);
+      client.publish("smart/garden/message/soil", "Dry");
+   }   
+  
+{
+   if (!client.connected()) {
+    reconnect();
+  }
+  if(!client.loop())
+    client.connect("ESP8266Client");
+
+  
+  }
+
+}
+
+
+
+
+ 
