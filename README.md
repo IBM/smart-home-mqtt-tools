@@ -14,7 +14,7 @@ When you have completed this code pattern, you will understand how to:
 * Send messages to Slack.
 
 ## Flow
-![ArchitectureDiagram](images/SH_Architecture_DiagramV2.png)
+![ArchitectureDiagram](images/SH_Architecture_DiagramV3.png)
  
 1.	The smart home consists of 13 sensors and actuators connected to an Arduino-like device. This device has an extra board where all the components are connected to.
 2. The smart garden, which is a NodeMCU-device a sensor to control the garden (optional).
