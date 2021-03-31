@@ -1,9 +1,9 @@
 
 
 # Open-source tools to connect and control your ‘Smart home’ via MQTT and Bluetooth
-Sometimes it can be complicated to read certain sensors to see what is going on. This tutorial makes that simple, with only open-source technologies. This might not be an enterprise-ready solution, but it shows how easy it is to use any device. So also, more professional devices can be used in similar ways.
+Sometimes it can be complicated to read certain sensors to see what is going on. This code pattern makes that simple, with only open-source technologies. This might not be an enterprise-ready solution, but it shows how easy it is to use any device. So also, more professional devices can be used in similar ways.
 
-When you have completed this tutorial, you will understand how to:
+When you have completed this code pattern, you will understand how to:
 
 * Connect sensors and actuators to an Arduino and read their values.
 * Set up a gateway on a Raspberry Pi.
